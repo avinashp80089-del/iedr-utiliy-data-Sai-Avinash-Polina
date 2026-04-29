@@ -13,8 +13,13 @@ dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
     "pyspark==3.5.0",
-    "delta-spark==3.1.0"
-    "ruff>0.1.0",
+    "delta-spark==3.1.0",
+    "ruff>=0.1.0",
+]
+serving = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "databricks-sql-connector>=3.0",
 ]
 
 [build-system]
@@ -35,3 +40,11 @@ markers = [
     "integration: end-to-end tests (full bronze→silver→platinum chain)",
     "unit: fast unit tests for individual transforms",
 ]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]

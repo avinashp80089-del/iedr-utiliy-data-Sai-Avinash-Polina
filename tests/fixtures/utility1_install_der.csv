@@ -1,0 +1,5 @@
+ProjectID,ProjectType,NamePlateRating,TotalChargesCESIR,TotalChargesConstruction,CESIR_EST,SystemUpgrade_EST,ProjectCircuitID,Hybrid,SolarPV,EnergyStorageSystem,Wind,MicroTurbine,SynchronousGenerator,InductionGenerator,FarmWaste,FuelCell,CombinedHeatandPower,GasTurbine,Hydro,InternalCombustionEngine,SteamTurbine,Other
+3875,Solar,100,NULL,NULL,0,0,1105354,N,100,0,0,0,0,0,0,0,0,0,0,0,0,0
+7389,Wind,200,NULL,NULL,0,0,1105352,N,0,0,200,0,0,0,0,0,0,0,0,0,0,0
+9999,Hybrid,150,NULL,NULL,0,0,1105354,Y,75,75,0,0,0,0,0,0,0,0,0,0,0,0
+1234,Unknown,50,NULL,NULL,0,0,UNRESOLVED_ID,N,0,0,0,0,0,0,0,0,0,0,0,0,0,0

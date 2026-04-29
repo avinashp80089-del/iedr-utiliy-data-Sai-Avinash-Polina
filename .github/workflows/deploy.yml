@@ -1,0 +1,95 @@
+name: Deploy (DEV → QA → PROD)
+
+# Triggers only on pushes to main. Feature branches go through PR + CI first.
+# QA and PROD deploys gate on GitHub Environments with required reviewers
+# (configured under Settings → Environments → qa / prod → "Required reviewers").
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # allow manual re-deploy from the Actions UI
+
+env:
+  DATABRICKS_HOST:  ${{ secrets.DATABRICKS_HOST }}
+  DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+jobs:
+
+  # ---------------------------------------------------------------- #
+  # 1. CI gate — re-run tests against the merge commit.              #
+  # ---------------------------------------------------------------- #
+  test:
+    name: Tests (gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "17" }
+      - run: |
+          pip install -e ".[dev]"
+          pytest tests/ -v
+
+  # ---------------------------------------------------------------- #
+  # 2. Build wheel — package the iedr/ source for cluster install.   #
+  # ---------------------------------------------------------------- #
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install build && python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iedr-wheel
+          path: dist/*.whl
+
+  # ---------------------------------------------------------------- #
+  # 3. DEV deploy — automatic.                                       #
+  # ---------------------------------------------------------------- #
+  deploy_dev:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: iedr-wheel, path: dist/ }
+      - uses: databricks/setup-cli@main
+      - run: databricks bundle validate -t dev
+      - run: databricks bundle deploy -t dev
+
+  # ---------------------------------------------------------------- #
+  # 4. QA deploy — gated on dev success + GitHub Environment review. #
+  # ---------------------------------------------------------------- #
+  deploy_qa:
+    needs: deploy_dev
+    runs-on: ubuntu-latest
+    environment: qa            # ← required reviewers configured in repo settings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: iedr-wheel, path: dist/ }
+      - uses: databricks/setup-cli@main
+      - run: databricks bundle validate -t qa
+      - run: databricks bundle deploy -t qa
+      # Smoke-test: kick off a one-time job run and wait for green
+      - run: databricks bundle run iedr_pipeline -t qa
+
+  # ---------------------------------------------------------------- #
+  # 5. PROD deploy — gated on QA success + manual approval.          #
+  # ---------------------------------------------------------------- #
+  deploy_prod:
+    needs: deploy_qa
+    runs-on: ubuntu-latest
+    environment: prod          # ← stricter reviewers (e.g. on-call lead)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: iedr-wheel, path: dist/ }
+      - uses: databricks/setup-cli@main
+      - run: databricks bundle validate -t prod
+      - run: databricks bundle deploy -t prod

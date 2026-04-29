@@ -1,0 +1,36 @@
+# Utility 2 configuration.
+#
+# U2 records are full circuits (one row per feeder, no segment rollup needed).
+# DER type comes from a single string column. DER feeder ID is given directly
+# in DER_INTERCONNECTION_LOCATION.
+
+utility_id: utility2
+
+file_pattern: "{utility_id}_{dataset}.csv"
+
+datasets:
+  - circuits
+  - install_der
+  - planned_der
+
+status_to_dataset:
+  installed: install_der
+  planned:   planned_der
+
+columns:
+  circuits:
+    feeder_id:    Master_CDF
+    max_hc:       feeder_max_hc
+    min_hc:       feeder_min_hc
+    refresh_date: hca_refresh_date
+    voltage:      feeder_voltage
+  install_der:
+    der_id:     DER_ID
+    der_type:   DER_TYPE
+    nameplate:  DER_NAMEPLATE_RATING
+    feeder_id:  DER_INTERCONNECTION_LOCATION
+  planned_der:
+    der_id:     INTERCONNECTION_QUEUE_REQUEST_ID
+    der_type:   DER_TYPE
+    nameplate:  DER_NAMEPLATE_RATING
+    feeder_id:  DER_INTERCONNECTION_LOCATION

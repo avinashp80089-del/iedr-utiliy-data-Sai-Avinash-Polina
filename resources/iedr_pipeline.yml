@@ -1,0 +1,47 @@
+resources:
+  jobs:
+    iedr_pipeline:
+      name: iedr-${var.env}-pipeline
+
+      # Run on the 1st of every month at 06:00 UTC
+      schedule:
+        quartz_cron_expression: "0 0 6 1 * ?"
+        timezone_id: UTC
+        pause_status: PAUSED
+
+      tasks:
+
+        - task_key: bronze_ingest
+          notebook_task:
+            notebook_path: ../notebooks/bronze/bronze_ingest.py
+            base_parameters:
+              env:        ${var.env}
+              catalog:    ${var.catalog}
+              batch_date: ""
+          timeout_seconds: 1800
+          max_retries: 2
+          retry_on_timeout: true
+
+        - task_key: silver_transform
+          depends_on:
+            - task_key: bronze_ingest
+          notebook_task:
+            notebook_path: ../notebooks/silver/silver_transformation.py
+            base_parameters:
+              env:        ${var.env}
+              catalog:    ${var.catalog}
+              batch_date: ""
+          timeout_seconds: 1800
+          max_retries: 2
+
+        - task_key: platinum_build
+          depends_on:
+            - task_key: silver_transform
+          notebook_task:
+            notebook_path: ../notebooks/platinum/platinum_tables.py
+            base_parameters:
+              env:        ${var.env}
+              catalog:    ${var.catalog}
+              batch_date: ""
+          timeout_seconds: 1800
+          max_retries: 1

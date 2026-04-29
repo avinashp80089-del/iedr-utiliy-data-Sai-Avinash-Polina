@@ -1,0 +1,41 @@
+bundle:
+  name: iedr-utility-data-lakehouse
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog name
+    default: workspace
+  env:
+    description: Environment name (dev / qa / prod)
+    default: dev
+
+targets:
+
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-9b04315f-c3cf.cloud.databricks.com
+    variables:
+      catalog: workspace
+      env: dev
+
+  qa:
+    mode: development
+    workspace:
+      host: https://dbc-9b04315f-c3cf.cloud.databricks.com
+    variables:
+      catalog: workspace
+      env: qa
+
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-9b04315f-c3cf.cloud.databricks.com
+      root_path: /Workspace/Users/avinashp80089@gmail.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: workspace
+      env: prod

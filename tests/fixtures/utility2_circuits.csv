@@ -1,0 +1,3 @@
+Master_CDF,feeder_voltage,feeder_max_hc,feeder_min_hc,feeder_dg_connected_since_refresh,hca_refresh_date,color,shape_length
+36_13_81756,13.2,0,0,0,2022/10/01 00:00:00+00,brown,1.277295106
+36_13_81757,13.2,1.1,0.1,0.01,2022/10/01 00:00:00+00,green,3.175783235

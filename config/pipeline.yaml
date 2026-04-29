@@ -1,0 +1,24 @@
+# Top-level pipeline configuration.
+#
+# Declares which utilities are active per environment.
+# Adding utility 3 (or 4, or 8) is a YAML edit + an adapter class —
+# no orchestration code changes.
+
+environments:
+  dev:
+    utilities:
+      - utility1
+      - utility2
+
+  qa:
+    utilities:
+      - utility1
+      - utility2
+
+  prod:
+    utilities:
+      - utility1
+      - utility2
+      # As additional NY utilities onboard, append them here:
+      # - utility3
+      # - utility4

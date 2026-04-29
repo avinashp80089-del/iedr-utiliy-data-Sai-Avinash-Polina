@@ -7,8 +7,13 @@ Declaring schemas explicitly means:
 """
 
 from pyspark.sql.types import (
-    BooleanType, DateType, DoubleType, StringType,
-    StructField, StructType, TimestampType,
+    BooleanType,
+    DateType,
+    DoubleType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
 )
 
 AUDIT_COLUMNS = [

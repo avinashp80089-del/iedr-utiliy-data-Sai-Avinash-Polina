@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from functools import reduce
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 from iedr.common.context import PipelineContext, add_audit_columns

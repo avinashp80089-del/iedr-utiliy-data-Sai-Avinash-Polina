@@ -29,11 +29,10 @@ jobs:
           java-version: "17"
 
       - name: Install package + dev deps
-        # Single source of truth: deps come from pyproject.toml, not a hand-
-        # maintained list duplicated between README and CI yml.
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+          pip install ruff
 
       - name: Lint (ruff)
         run: ruff check src tests

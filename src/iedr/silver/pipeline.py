@@ -109,12 +109,17 @@ def _build_dim_feeder(spark, ctx, adapters) -> None:
         order_cols.append(col("batch_date").desc())
     if "load_ts" in union.columns:
         order_cols.append(col("load_ts").desc())
-    if order_cols:
-        window = Window.partitionBy("utility_id", "feeder_id").orderBy(*order_cols)
-    else:
-        window = Window.partitionBy("utility_id", "feeder_id")
+    # Window function requires at least one ORDER BY; use row_id if no timestamps
+    if not order_cols:
+        # Use Spark's natural row order as fallback
+        from pyspark.sql.functions import monotonically_increasing_id
+        union = union.withColumn("_row_id", monotonically_increasing_id())
+        order_cols.append(col("_row_id").desc())
 
+    window = Window.partitionBy("utility_id", "feeder_id").orderBy(*order_cols)
     union = union.withColumn("rn", row_number().over(window)).filter(col("rn") == 1).drop("rn")
+    if "_row_id" in union.columns:
+        union = union.drop("_row_id")
 
     target = f"{ctx.silver_schema}.dim_feeder"
     if spark.catalog.tableExists(target):
@@ -141,12 +146,17 @@ def _build_fact_der(spark, ctx, adapters, status) -> None:
         order_cols.append(col("batch_date").desc())
     if "load_ts" in union.columns:
         order_cols.append(col("load_ts").desc())
-    if order_cols:
-        window = Window.partitionBy("utility_id", "der_id", "status").orderBy(*order_cols)
-    else:
-        window = Window.partitionBy("utility_id", "der_id", "status")
+    # Window function requires at least one ORDER BY; use row_id if no timestamps
+    if not order_cols:
+        # Use Spark's natural row order as fallback
+        from pyspark.sql.functions import monotonically_increasing_id
+        union = union.withColumn("_row_id", monotonically_increasing_id())
+        order_cols.append(col("_row_id").desc())
 
+    window = Window.partitionBy("utility_id", "der_id", "status").orderBy(*order_cols)
     union = union.withColumn("rn", row_number().over(window)).filter(col("rn") == 1).drop("rn")
+    if "_row_id" in union.columns:
+        union = union.drop("_row_id")
 
     union = apply_expectations(union, FACT_DER_EXPECTATIONS, f"fact_der ({status})")
     union = add_audit_columns(union, ctx)

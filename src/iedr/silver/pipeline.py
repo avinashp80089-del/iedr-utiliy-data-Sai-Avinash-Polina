@@ -101,7 +101,7 @@ def _build_dim_feeder(spark, ctx, adapters) -> None:
     union = reduce(DataFrame.unionByName, (a.build_dim_feeder() for a in adapters))
     union = apply_expectations(union, DIM_FEEDER_EXPECTATIONS, "dim_feeder")
     union = add_audit_columns(union, ctx)
-    
+
     # Deduplicate: keep only one row per (utility_id, feeder_id)
     # Prefer the most recently loaded record (highest batch_date, highest load_ts)
     union = union.withColumn(
@@ -138,7 +138,7 @@ def _build_dim_feeder(spark, ctx, adapters) -> None:
 
 def _build_fact_der(spark, ctx, adapters, status) -> None:
     union = reduce(DataFrame.unionByName, (a.build_fact_der(status) for a in adapters))
-    
+
     # Deduplicate: keep only one row per (utility_id, der_id, status)
     # Prefer the most recently loaded record (highest batch_date, highest load_ts)
     # This prevents MERGE conflicts when multiple source rows match the same target row
@@ -158,7 +158,7 @@ def _build_fact_der(spark, ctx, adapters, status) -> None:
                   union["load_ts"].desc() if "load_ts" in union.columns else None
               )
     ) == 1).drop("rn")
-    
+
     union = apply_expectations(union, FACT_DER_EXPECTATIONS, f"fact_der ({status})")
     union = add_audit_columns(union, ctx)
 

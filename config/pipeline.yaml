@@ -22,3 +22,8 @@ environments:
       # As additional NY utilities onboard, append them here:
       # - utility3
       # - utility4
+
+  integration:
+    utilities:
+      - utility1
+      - utility2

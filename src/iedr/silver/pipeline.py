@@ -52,7 +52,11 @@ FACT_DER_EXPECTATIONS = [
 
 def run_silver(spark: SparkSession, ctx: PipelineContext) -> None:
     """Top-level silver pipeline. Idempotent for a given batch_date."""
-    spark.sql(f"USE CATALOG {ctx.catalog}")
+    try:
+        spark.sql(f"USE CATALOG {ctx.catalog}")
+    except Exception:
+        # Local Spark doesn't support USE CATALOG; Databricks will succeed
+        pass
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {ctx.silver_schema}")
 
     adapters = _instantiate_adapters(spark, ctx)

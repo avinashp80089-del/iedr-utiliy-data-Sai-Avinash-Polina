@@ -27,7 +27,11 @@ from iedr.common.context import PipelineContext, add_audit_columns
 
 
 def run_platinum(spark: SparkSession, ctx: PipelineContext) -> None:
-    spark.sql(f"USE CATALOG {ctx.catalog}")
+    try:
+        spark.sql(f"USE CATALOG {ctx.catalog}")
+    except Exception:
+        # Local Spark doesn't support USE CATALOG; Databricks will succeed
+        pass
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {ctx.platinum_schema}")
     print(f"Platinum: silver={ctx.silver_schema} → platinum={ctx.platinum_schema}")
 

@@ -32,7 +32,11 @@ from iedr.common.context import PipelineContext, add_audit_columns
 
 def run_bronze(spark: SparkSession, ctx: PipelineContext) -> None:
     """Top-level bronze ingest. Idempotent for a given batch_date."""
-    spark.sql(f"USE CATALOG {ctx.catalog}")
+    try:
+        spark.sql(f"USE CATALOG {ctx.catalog}")
+    except Exception:
+        # Local Spark doesn't support USE CATALOG; Databricks will succeed
+        pass
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {ctx.bronze_schema}")
 
     pipeline_cfg: dict[str, Any] = load_pipeline_config(ctx.env)

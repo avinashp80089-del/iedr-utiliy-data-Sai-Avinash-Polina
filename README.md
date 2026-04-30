@@ -90,8 +90,7 @@ iedr-utility-data-lakehouse/
 │       └── utility2.yaml
 ├── tests/
 │   ├── unit/                     # imports the real production classes
-│   └── integration/              # full bronze→silver→platinum on fixture CSVs
-├── serving/api.py                # FastAPI stub binding platinum to typed responses
+│   └── integration/              # full bronze→silver→platinum on fixture CSVs             
 ├── docs/
 │   ├── architecture.md           # data flow, scaling, design notes
 │   ├── design_decisions.md       # alternatives considered, why we chose what we did

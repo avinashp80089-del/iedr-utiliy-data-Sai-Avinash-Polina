@@ -1,6 +1,6 @@
 # IEDR Utility Data Lakehouse
 
-A scalable, harmonized data platform that ingests electrical-circuit and DER (Distributed Energy Resource) data from multiple New York utilities and serves it through two API-ready queries — built on Databricks + PySpark + Delta Lake.
+A scalable data platform that ingests electrical-circuit and DER (Distributed Energy Resource) data from multiple New York utilities and serves it through two API-ready queries — built on Databricks + PySpark + Delta Lake.
 
 ## What it does
 

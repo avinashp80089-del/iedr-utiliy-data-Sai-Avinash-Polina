@@ -25,7 +25,7 @@ from typing import Any
 
 from delta.tables import DeltaTable
 from pyspark.sql import DataFrame, SparkSession, Window
-from pyspark.sql.functions import row_number, col
+from pyspark.sql.functions import col, row_number
 
 from iedr.common.config import load_pipeline_config, load_utility_config
 from iedr.common.context import PipelineContext, add_audit_columns

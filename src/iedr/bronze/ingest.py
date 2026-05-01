@@ -6,7 +6,7 @@ Key design decisions
 1. APPEND, not overwrite. Each monthly drop is a new partition (batch_date).
    If utility 1 sends a corrected file in April, the original March file is
    preserved in the March partition. The original mode("overwrite") destroyed
-   that history every run — unsafe for a regulated utility dataset.
+   that history every run - unsafe for a regulated utility dataset.
 
 2. Streaming-ready. The spark.read.csv path can be swapped 1:1 to
    spark.readStream.format("cloudFiles") for Auto Loader. See the commented
@@ -106,27 +106,3 @@ def _ingest_one(
     return row_count
 
 
-# ---------------------------------------------------------------------------- #
-# Auto Loader swap recipe (production streaming path)                           #
-# ---------------------------------------------------------------------------- #
-# Replace the spark.read block in _ingest_one with:
-#
-#     df_raw = (
-#         spark.readStream.format("cloudFiles")
-#             .option("cloudFiles.format", "csv")
-#             .option("cloudFiles.schemaLocation", f"{ctx.volume_base}/_schemas/{utility_id}_{dataset}")
-#             .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
-#             .option("header", "true")
-#             .option("multiLine", "true")
-#             .load(f"{ctx.volume_base}/incoming/{utility_id}/{dataset}/")
-#     )
-#
-# And the write becomes:
-#
-#     query = (df_bronze.writeStream
-#         .format("delta")
-#         .option("checkpointLocation", f"{ctx.volume_base}/_checkpoints/{utility_id}_{dataset}")
-#         .partitionBy("utility_id", "batch_date")
-#         .trigger(availableNow=True)
-#         .toTable(table_name))
-#     query.awaitTermination()

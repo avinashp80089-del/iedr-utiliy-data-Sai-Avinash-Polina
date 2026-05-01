@@ -22,13 +22,13 @@ if SRC_PATH not in sys.path:
 
 os.environ["IEDR_CONFIG_ROOT"] = CONFIG_PATH
 
-# COMMAND ----------
 
-dbutils.widgets.dropdown("env",        "dev", ["dev", "qa", "prod"])
-dbutils.widgets.text("catalog",        "workspace")
-dbutils.widgets.text("batch_date",     "")   # blank → today; YYYY-MM-DD for back-fills
 
-# COMMAND ----------
+dbutils.widgets.dropdown("env", "dev", ["dev", "qa", "prod"])
+dbutils.widgets.text("catalog", "workspace")
+dbutils.widgets.text("batch_date", "")   # blank → today; YYYY-MM-DD for back-fills
+
+
 
 from iedr.bronze.ingest import run_bronze
 from iedr.common.context import PipelineContext

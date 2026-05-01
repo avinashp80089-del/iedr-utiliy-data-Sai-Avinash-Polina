@@ -1,12 +1,6 @@
 """
 Unit tests for the silver-layer utility adapters.
 
-KEY DIFFERENCE FROM THE PREVIOUS REVISION
------------------------------------------
-These tests import the PRODUCTION classes directly (Utility1Adapter,
-Utility2Adapter). The previous version re-implemented the logic locally
-and tested the copy — meaning a regression in the notebook would slip
-through CI silently. That defect is fixed here.
 """
 
 from __future__ import annotations
@@ -27,9 +21,8 @@ from iedr.silver.adapters.utility2 import Utility2Adapter
 pytestmark = pytest.mark.unit
 
 
-# ---------------------------------------------------------------------------- #
-# Helpers                                                                       #
-# ---------------------------------------------------------------------------- #
+# Helpers                                                                      
+
 U1_CONFIG = {
     "utility_id": "utility1",
     "datasets": ["circuits", "install_der", "planned_der"],
@@ -99,9 +92,9 @@ def _u2(spark, ctx) -> Utility2Adapter:
     return Utility2Adapter(spark, U2_CONFIG, ctx)
 
 
-# ---------------------------------------------------------------------------- #
-# DER-type derivation tests (the trickiest U1 logic)                            #
-# ---------------------------------------------------------------------------- #
+
+# DER-type derivation tests (the trickiest U1 logic)                       
+
 def test_u1_der_type_single(spark, ctx):
     """One nonzero numeric column → that column's mapped label."""
     df = spark.createDataFrame(
@@ -155,10 +148,8 @@ def test_u1_der_type_handles_string_garbage(spark, ctx):
     result = _u1(spark, ctx)._derive_der_type(df).collect()
     assert result[0]["der_type"] == "Wind"
 
+# Float-feeder-ID cast (the .0 stripping)                                      
 
-# ---------------------------------------------------------------------------- #
-# Float-feeder-ID cast (the .0 stripping)                                       #
-# ---------------------------------------------------------------------------- #
 def test_u1_feeder_id_long_string_cast(spark):
     """
     NYHCPV_csv_NFEEDER is a float column (e.g. 1105354.0). Direct cast to
@@ -174,9 +165,9 @@ def test_u1_feeder_id_long_string_cast(spark):
     assert result[1]["feeder_id"] == "1105352"
 
 
-# ---------------------------------------------------------------------------- #
-# U2 happy-path: feeder_id passthrough + null-flag                              #
-# ---------------------------------------------------------------------------- #
+
+# U2 happy-path: feeder_id passthrough + null-flag                         
+
 def test_u2_planned_der_uses_correct_pk_column(spark, ctx, monkeypatch):
     """
     U2 planned-DER PK is INTERCONNECTION_QUEUE_REQUEST_ID, not DER_ID. The
@@ -184,11 +175,11 @@ def test_u2_planned_der_uses_correct_pk_column(spark, ctx, monkeypatch):
     """
     schema = StructType([
         StructField("INTERCONNECTION_QUEUE_REQUEST_ID", StringType(), True),
-        StructField("DER_TYPE",                          StringType(), True),
-        StructField("DER_NAMEPLATE_RATING",              DoubleType(), True),
-        StructField("DER_INTERCONNECTION_LOCATION",      StringType(), True),
-        StructField("utility_id",                        StringType(), True),
-        StructField("batch_date",                        StringType(), True),
+        StructField("DER_TYPE", StringType(), True),
+        StructField("DER_NAMEPLATE_RATING", DoubleType(), True),
+        StructField("DER_INTERCONNECTION_LOCATION", StringType(), True),
+        StructField("utility_id", StringType(), True),
+        StructField("batch_date", StringType(), True),
     ])
     df_raw = spark.createDataFrame(
         [("293870", "Solar", 5000.0, "36_32_36552", "utility2", "2026-04-01")],
@@ -209,11 +200,11 @@ def test_u2_planned_der_uses_correct_pk_column(spark, ctx, monkeypatch):
 def test_u2_der_with_null_feeder_id_marked_unresolved(spark, ctx, monkeypatch):
     """U2 nulls feeder_id when the utility didn't supply DER_INTERCONNECTION_LOCATION."""
     schema = StructType([
-        StructField("DER_ID",                       StringType(), True),
-        StructField("DER_TYPE",                     StringType(), True),
-        StructField("DER_NAMEPLATE_RATING",         DoubleType(), True),
+        StructField("DER_ID", StringType(), True),
+        StructField("DER_TYPE", StringType(), True),
+        StructField("DER_NAMEPLATE_RATING", DoubleType(), True),
         StructField("DER_INTERCONNECTION_LOCATION", StringType(), True),
-        StructField("utility_id",                   StringType(), True),
+        StructField("utility_id", StringType(), True),
     ])
     df_raw = spark.createDataFrame(
         [("391308", "Solar", 7.6, None, "utility2")],
@@ -226,15 +217,13 @@ def test_u2_der_with_null_feeder_id_marked_unresolved(spark, ctx, monkeypatch):
     assert result[0]["feeder_id"] is None
     assert result[0]["feeder_id_unresolved"] is True
 
+# Schema-naming contract                                                     
 
-# ---------------------------------------------------------------------------- #
-# Schema-naming contract                                                        #
-# ---------------------------------------------------------------------------- #
 def test_pipeline_context_schema_naming():
     for env in ("dev", "qa", "prod"):
         ctx = PipelineContext(env=env, catalog="x")
-        assert ctx.bronze_schema   == f"iedr_{env}_bronze"
-        assert ctx.silver_schema   == f"iedr_{env}_silver"
+        assert ctx.bronze_schema == f"iedr_{env}_bronze"
+        assert ctx.silver_schema == f"iedr_{env}_silver"
         assert ctx.platinum_schema == f"iedr_{env}_platinum"
 
 

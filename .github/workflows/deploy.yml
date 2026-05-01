@@ -14,9 +14,8 @@ env:
 
 jobs:
 
-  # ---------------------------------------------------------------- #
-  # 1. CI gate — re-run tests against the merge commit.              #
-  # ---------------------------------------------------------------- #
+  # 1. CI gate — re-run tests against the merge commit.           
+
   test:
     name: Tests (gate)
     runs-on: ubuntu-latest
@@ -31,9 +30,9 @@ jobs:
           pip install -e ".[dev]"
           pytest tests/ -v
 
-  # ---------------------------------------------------------------- #
-  # 2. Build wheel — package the iedr/ source for cluster install.   #
-  # ---------------------------------------------------------------- #
+
+  # 2. Build wheel — package the iedr/ source for cluster install.   
+
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -47,9 +46,9 @@ jobs:
           name: iedr-wheel
           path: dist/*.whl
 
-  # ---------------------------------------------------------------- #
-  # 3. DEV deploy — automatic.                                       #
-  # ---------------------------------------------------------------- #
+ 
+  # 3. DEV deploy — automatic.                                       
+
   deploy_dev:
     needs: build
     runs-on: ubuntu-latest
@@ -62,13 +61,12 @@ jobs:
       - run: databricks bundle validate -t dev
       - run: databricks bundle deploy -t dev
 
-  # ---------------------------------------------------------------- #
-  # 4. QA deploy — gated on dev success + GitHub Environment review. #
-  # ---------------------------------------------------------------- #
+  # 4. QA deploy — gated on dev success + GitHub Environment review.
+
   deploy_qa:
     needs: deploy_dev
     runs-on: ubuntu-latest
-    environment: qa            # ← required reviewers configured in repo settings
+    environment: qa            #  required reviewers configured in repo settings
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -79,13 +77,12 @@ jobs:
       # Smoke-test: kick off a one-time job run and wait for green
       - run: databricks bundle run iedr_pipeline -t qa
 
-  # ---------------------------------------------------------------- #
-  # 5. PROD deploy — gated on QA success + manual approval.          #
-  # ---------------------------------------------------------------- #
+  # 5. PROD deploy — gated on QA success + manual approval.          
+
   deploy_prod:
     needs: deploy_qa
     runs-on: ubuntu-latest
-    environment: prod          # ← stricter reviewers (e.g. on-call lead)
+    environment: prod          # stricter reviewers 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4

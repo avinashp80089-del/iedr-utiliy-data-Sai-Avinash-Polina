@@ -11,36 +11,7 @@ Build a scalable, harmonized data platform to ingest, clean, and serve utility c
 | 2c          | `SELECT * FROM platinum.feeder_capacity WHERE max_hosting_capacity > X`                   | Partition `utility_id`, Z-ORDER `max_hosting_capacity` |
 | 2d          | `SELECT * FROM platinum.feeder_der_details WHERE feeder_id = X AND utility_id = Y`        | Partition `utility_id`, Z-ORDER `feeder_id`            |
 
-## Data flow
 
-```mermaid
-graph TD
-    subgraph "Per-utility bronze (append-only)"
-        B[utility{N}_circuits<br/>utility{N}_install_der<br/>utility{N}_planned_der<br/>partition: (utility_id, batch_date)]
-    end
-
-    subgraph "Silver — canonical model"
-        DF[dim_feeder<br/>partition: utility_id<br/>SCD Type 1 MERGE]
-        FD[fact_der<br/>partition: utility_id<br/>MERGE on utility_id, der_id, status]
-        BR[bridge_u1_circuit_to_feeder<br/>U1-only segment→feeder lookup]
-    end
-
-    subgraph "Platinum — API-facing"
-        FC[feeder_capacity<br/>partition: utility_id<br/>Z-ORDER: max_hosting_capacity]
-        FDD[feeder_der_details<br/>partition: utility_id<br/>Z-ORDER: feeder_id]
-        DQ[data_quality<br/>per-utility, per-status metrics]
-    end
-
-    B --> BR
-    B --> DF
-    B --> FD
-
-    DF --> FC
-    DF --> FDD
-    FD --> FDD
-    DF --> DQ
-    FD --> DQ
-```
 
 ## Scalability
 

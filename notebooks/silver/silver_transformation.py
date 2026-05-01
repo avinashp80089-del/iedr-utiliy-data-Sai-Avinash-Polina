@@ -22,9 +22,9 @@ os.environ["IEDR_CONFIG_ROOT"] = CONFIG_PATH
 
 # COMMAND ----------
 
-dbutils.widgets.dropdown("env",        "dev", ["dev", "qa", "prod"])
-dbutils.widgets.text("catalog",        "workspace")
-dbutils.widgets.text("batch_date",     "")
+dbutils.widgets.dropdown("env", "dev", ["dev", "qa", "prod"])
+dbutils.widgets.text("catalog", "workspace")
+dbutils.widgets.text("batch_date", "")
 
 # COMMAND ----------
 

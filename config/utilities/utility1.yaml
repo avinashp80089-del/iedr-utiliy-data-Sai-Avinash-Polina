@@ -1,9 +1,6 @@
 # Utility 1 configuration.
-#
 # This file is the ENTIRE knowledge of utility-1-specific column names and
-# encoding quirks. The Utility1Adapter class encapsulates the algorithms;
-# this YAML encapsulates the data shape. Together they let us onboard a new
-# utility without changing orchestration code.
+# encoding quirks.
 
 utility_id: utility1
 
@@ -20,34 +17,34 @@ status_to_dataset:
 
 columns:
   circuits:
-    feeder_id:    NYHCPV_csv_NFEEDER       # rolled up from segments
-    circuit_id:   Circuits_Phase3_CIRCUIT  # used to build the bridge
-    max_hc:       NYHCPV_csv_FMAXHC        # FEEDER-level (NOT NMAXHC)
-    min_hc:       NYHCPV_csv_FMINHC
+    feeder_id: NYHCPV_csv_NFEEDER       # rolled up from segments
+    circuit_id: Circuits_Phase3_CIRCUIT  # used to build the bridge
+    max_hc: NYHCPV_csv_FMAXHC        # FEEDER-level
+    min_hc: NYHCPV_csv_FMINHC
     refresh_date: NYHCPV_csv_FHCADATE
-    voltage:      NYHCPV_csv_FVOLTAGE
+    voltage: NYHCPV_csv_FVOLTAGE
   install_der:
-    der_id:      ProjectID
-    circuit_id:  ProjectCircuitID
-    nameplate:   NamePlateRating
+    der_id: ProjectID
+    circuit_id: ProjectCircuitID
+    nameplate: NamePlateRating
   planned_der:
-    der_id:      ProjectID
-    circuit_id:  ProjectCircuitID
-    nameplate:   NamePlateRating
+    der_id: ProjectID
+    circuit_id: ProjectCircuitID
+    nameplate: NamePlateRating
 
 # Wide-boolean DER type columns → canonical der_type label
 der_type_map:
-  SolarPV:                   Solar
-  EnergyStorageSystem:       Energy Storage
-  Wind:                      Wind
-  CombinedHeatandPower:      Combined Heat and Power
-  FuelCell:                  Fuel Cell
-  FarmWaste:                 Anaerobic Digester
-  Hydro:                     Hydro
-  MicroTurbine:              Micro Turbine
-  SynchronousGenerator:      Synchronous Generator
-  InductionGenerator:        Induction Generator
-  GasTurbine:                Gas Turbine
-  InternalCombustionEngine:  Internal Combustion Engine
-  SteamTurbine:              Steam Turbine
-  Other:                     Other
+  SolarPV: Solar
+  EnergyStorageSystem: Energy Storage
+  Wind: Wind
+  CombinedHeatandPower: Combined Heat and Power
+  FuelCell: Fuel Cell
+  FarmWaste: Anaerobic Digester
+  Hydro: Hydro
+  MicroTurbine: Micro Turbine
+  SynchronousGenerator: Synchronous Generator
+  InductionGenerator: Induction Generator
+  GasTurbine: Gas Turbine
+  InternalCombustionEngine: Internal Combustion Engine
+  SteamTurbine: Steam Turbine
+  Other: Other

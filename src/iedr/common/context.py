@@ -9,9 +9,9 @@ A senior pipeline can answer questions like:
   - "Re-run only the data that came in last Tuesday."
 
 Achieving that requires three things, propagated through every Delta table:
-  * pipeline_run_id  — UUID generated once per pipeline invocation
-  * batch_date       — logical date of the data drop (typically the file delivery date)
-  * ingestion_ts     — wall-clock timestamp of when this row was written
+  * pipeline_run_id — UUID generated once per pipeline invocation
+  * batch_date — logical date of the data drop (typically the file delivery date)
+  * ingestion_ts — wall-clock timestamp of when this row was written
 
 Without these columns surgical reprocessing is impossible — you have to rerun
 the whole pipeline from scratch.

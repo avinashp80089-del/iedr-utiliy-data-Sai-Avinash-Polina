@@ -39,14 +39,14 @@ DIM_FEEDER_EXPECTATIONS = [
     # and logs it instead of stopping the pipeline. The null row is a known
     # data quality issue in the source; dropping it is safer than failing
     # the entire monthly run.
-    Expectation("feeder_id_not_null",       "feeder_id IS NOT NULL",                                     severity="drop"),
-    Expectation("utility_id_not_null",      "utility_id IS NOT NULL",                                    severity="fail"),
+    Expectation("feeder_id_not_null", "feeder_id IS NOT NULL",  severity="drop"),
+    Expectation("utility_id_not_null", "utility_id IS NOT NULL", severity="fail"),
     Expectation("hosting_capacity_non_neg", "max_hosting_capacity IS NULL OR max_hosting_capacity >= 0", severity="warn"),
 ]
 
 FACT_DER_EXPECTATIONS = [
-    Expectation("der_id_not_null",  "der_id IS NOT NULL",                      severity="fail"),
-    Expectation("status_in_enum",   "status IN ('installed', 'planned')",      severity="fail"),
+    Expectation("der_id_not_null", "der_id IS NOT NULL", severity="fail"),
+    Expectation("status_in_enum", "status IN ('installed', 'planned')", severity="fail"),
     Expectation("capacity_non_neg", "capacity_kw IS NULL OR capacity_kw >= 0", severity="warn"),
 ]
 

@@ -3,7 +3,7 @@ Configuration loader.
 
 Why a config layer at all
 -------------------------
-The case prompt says "5 large utilities." Hardcoding utility-specific column
+The case prompt says "2large utilities." Hardcoding utility-specific column
 names and file patterns in code means every new utility = a code change + a
 deploy. Pulling that to YAML means:
 
